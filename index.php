@@ -19,9 +19,9 @@ $address = '0.0.0.0';
 $port = 8888;
 $length = 1024;
 
-include "./HttpResponse.php";
+include "./ResponseHandler.php";
 
-$http = new HttpResponses();
+$http = new ResponseHandler();
 
 $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 //can reuse port
