@@ -6,16 +6,30 @@
  * Time: 下午3:34
  */
 
-class Server
+class Server implements ServerInterface
 {
     private $ip;
     private $port;
+
+    private $requestHandler;
+    private $responseHandler;
 
     public function __construct($ip, $port)
     {
         $this->ip = $ip;
         $this->port = $port;
     }
+
+    public function setRequestHandler(RequestHandler $requestHandler)
+    {
+        $this->requestHandler = $requestHandler;
+    }
+
+    public function setResponseHandler(ResponseHandler $responseHandler)
+    {
+        $this->responseHandler = $responseHandler;
+    }
+
 
     public function start()
     {
@@ -52,34 +66,21 @@ class Server
 
                 socket_write($clientFd, $response);
                 socket_close($clientFd);
-
             } catch (Exception $e) {
                 echo $e->getMessage();
                 $this->error("READ FAILED:");
             }
-
-
         } while (true);
-
     }
 
     public function requestHandler($request)
     {
-        $http = null;
-        return $http;
+        $this->requestHandler->parseHttp($request);
     }
 
     public function response()
     {
-        $content = '<h1 style="
-text-align: center;
-color:aqua;
-margin-top: 200px;
-font-size:81px;
-font-weight: bold;
-background: grey;
-">
-Hello PhpWebServer   !!</h1>';
+        $content = $_GET['id'] ?? 'hello world';
         $http = new ResponseHandler();
         $response = $http->response($content);
         return $response;

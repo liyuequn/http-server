@@ -8,7 +8,7 @@
 
 class ResponseHandler
 {
-    Const STATUS = [
+    const STATUS = [
         '200'=>'ok',
 
         '301'=>'Moved Permanently',
@@ -21,7 +21,7 @@ class ResponseHandler
         '502'=>'Bad GateWay'
     ];
 
-    Const OPTIONS = [
+    const OPTIONS = [
         "Server" => "phpHttpServer",
         "Content-Type" => "text/html; charset=UTF-8",
     ];
@@ -48,12 +48,11 @@ class ResponseHandler
         $this->options[$key] = $value;
     }
 
-    public function response(string $content,$status = 200)
+    public function response(string $content, $status = 200)
     {
         $text = "HTTP/1.1 {$status} ".self::STATUS[$status]."\r\n";
 
-        foreach ($this->options as $key => $option)
-        {
+        foreach ($this->options as $key => $option) {
             $text .= $key .": ".$option."\r\n";
         }
         $text .= "Content-Length: ".strlen($content)."\r\n";
@@ -63,6 +62,5 @@ class ResponseHandler
         $this->content = $content;
 
         return $this->header."\r\n".$this->content;
-
     }
 }

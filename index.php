@@ -27,42 +27,36 @@ $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 //can reuse port
 socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
 
-socket_bind($sock,$address,$port);
+socket_bind($sock, $address, $port);
 
-socket_listen($sock,128);
+socket_listen($sock, 128);
 
 $clients [] = $sock;
 
-while (true)
-{
+while (true) {
     $reads = $clients;
-    if(socket_select($reads,$writes,$except,NULL) < 1) {
+    if (socket_select($reads, $writes, $except, null) < 1) {
         continue;
     }
 
-    if(in_array($sock,$reads))
-    {
+    if (in_array($sock, $reads)) {
         $writes[] = $sockAccepted = socket_accept($sock);
         $clients[] = $sockAccepted;
-        $key = array_search($sock,$reads);
+        $key = array_search($sock, $reads);
         unset($reads[$key]);
-
     }
 
-    foreach ($reads as $read)
-    {
-        $data = @socket_read($read,$length);
+    foreach ($reads as $read) {
+        $data = @socket_read($read, $length);
 
-        if($data === false)
-        {
-            unset($clients[array_search($read,$clients)]);
-            unset($reads[array_search($read,$reads)]);
+        if ($data === false) {
+            unset($clients[array_search($read, $clients)]);
+            unset($reads[array_search($read, $reads)]);
             continue;
         }
         $data = $http->response($content);
-        socket_write($read,$data);
+        socket_write($read, $data);
     }
-
 }
 
 socket_close($sock);

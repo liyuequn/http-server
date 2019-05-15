@@ -8,7 +8,7 @@
  */
 class RequestHandler
 {
-    public function parse_http($http)
+    public function parseHttp($http)
     {
         // 初始化
         $_POST = $_GET = $_COOKIE = $_REQUEST = $_SESSION = $_FILES =  array();
@@ -39,25 +39,21 @@ class RequestHandler
         list($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_SERVER['SERVER_PROTOCOL']) = explode(' ', $header_data[0]);
 
         unset($header_data[0]);
-        foreach($header_data as $content)
-        {
+        foreach ($header_data as $content) {
             // \r\n\r\n
-            if(empty($content))
-            {
+            if (empty($content)) {
                 continue;
             }
             list($key, $value) = explode(':', $content, 2);
             $key = strtolower($key);
             $value = trim($value);
-            switch($key)
-            {
+            switch ($key) {
                 // HTTP_HOST
                 case 'host':
                     $_SERVER['HTTP_HOST'] = $value;
                     $tmp = explode(':', $value);
                     $_SERVER['SERVER_NAME'] = $tmp[0];
-                    if(isset($tmp[1]))
-                    {
+                    if (isset($tmp[1])) {
                         $_SERVER['SERVER_PORT'] = $tmp[1];
                     }
                     break;
@@ -96,12 +92,9 @@ class RequestHandler
                     $_SERVER['HTTP_IF_NONE_MATCH'] = $value;
                     break;
                 case 'content-type':
-                    if(!preg_match('/boundary="?(\S+)"?/', $value, $match))
-                    {
+                    if (!preg_match('/boundary="?(\S+)"?/', $value, $match)) {
                         $_SERVER['CONTENT_TYPE'] = $value;
-                    }
-                    else
-                    {
+                    } else {
                         $_SERVER['CONTENT_TYPE'] = 'multipart/form-data';
                         $http_post_boundary = '--'.$match[1];
                     }
@@ -110,14 +103,10 @@ class RequestHandler
         }
 
         // 需要解析$_POST
-        if($_SERVER['REQUEST_METHOD'] === 'POST')
-        {
-            if(isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'multipart/form-data')
-            {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'multipart/form-data') {
                 $this->parse_upload_files($http_body, $http_post_boundary);
-            }
-            else
-            {
+            } else {
                 parse_str($http_body, $_POST);
                 // $GLOBALS['HTTP_RAW_POST_DATA']
                 $GLOBALS['HTTP_RAW_POST_DATA'] = $http_body;
@@ -126,13 +115,10 @@ class RequestHandler
 
         // QUERY_STRING
         $_SERVER['QUERY_STRING'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-        if($_SERVER['QUERY_STRING'])
-        {
+        if ($_SERVER['QUERY_STRING']) {
             // $GET
             parse_str($_SERVER['QUERY_STRING'], $_GET);
-        }
-        else
-        {
+        } else {
             $_SERVER['QUERY_STRING'] = '';
         }
 
@@ -150,38 +136,31 @@ class RequestHandler
     {
         $http_body = substr($http_body, 0, strlen($http_body) - (strlen($http_post_boundary) + 4));
         $boundary_data_array = explode($http_post_boundary."\r\n", $http_body);
-        if($boundary_data_array[0] === '')
-        {
+        if ($boundary_data_array[0] === '') {
             unset($boundary_data_array[0]);
         }
-        foreach($boundary_data_array as $boundary_data_buffer)
-        {
+        foreach ($boundary_data_array as $boundary_data_buffer) {
             list($boundary_header_buffer, $boundary_value) = explode("\r\n\r\n", $boundary_data_buffer, 2);
             // 去掉末尾\r\n
             $boundary_value = substr($boundary_value, 0, -2);
-            foreach (explode("\r\n", $boundary_header_buffer) as $item)
-            {
+            foreach (explode("\r\n", $boundary_header_buffer) as $item) {
                 list($header_key, $header_value) = explode(": ", $item);
                 $header_key = strtolower($header_key);
-                switch ($header_key)
-                {
+                switch ($header_key) {
                     case "content-disposition":
                         // 是文件
-                        if(preg_match('/name=".*?"; filename="(.*?)"$/', $header_value, $match))
-                        {
+                        if (preg_match('/name=".*?"; filename="(.*?)"$/', $header_value, $match)) {
                             $_FILES[] = array(
                                 'file_name' => $match[1],
                                 'file_data' => $boundary_value,
                                 'file_size' => strlen($boundary_value),
                             );
-                            continue;
+                            continue 2;
                         }
                         // 是post field
-                        else
-                        {
+                        else {
                             // 收集post
-                            if(preg_match('/name="(.*?)"$/', $header_value, $match))
-                            {
+                            if (preg_match('/name="(.*?)"$/', $header_value, $match)) {
                                 $_POST[$match[1]] = $boundary_value;
                             }
                         }

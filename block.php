@@ -15,8 +15,10 @@ $address = '0.0.0.0';
 $port = 8889;
 
 $server = new Server($address, $port);
+
+$requestHandler = new RequestHandler();
+$responseHandler = new ResponseHandler();
+
+$server->setRequestHandler($requestHandler);
+$server->setResponseHandler($responseHandler);
 $server->start();
-
-
-
-
