@@ -6,7 +6,7 @@
  * Time: 上午11:57
  */
 
-class HttpResponses
+class ResponseHandler
 {
     Const STATUS = [
         '200'=>'ok',
