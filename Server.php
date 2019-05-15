@@ -80,7 +80,7 @@ font-weight: bold;
 background: grey;
 ">
 Hello PhpWebServer   !!</h1>';
-        $http = new HttpResponses();
+        $http = new ResponseHandler();
         $response = $http->response($content);
         return $response;
     }
