@@ -13,11 +13,13 @@ class Server implements ServerInterface
 
     private $requestHandler;
     private $responseHandler;
+    private $welcome;
 
     public function __construct($ip, $port)
     {
         $this->ip = $ip;
         $this->port = $port;
+        $this->setWelcome();
     }
 
     public function setRequestHandler(RequestHandler $requestHandler)
@@ -80,7 +82,7 @@ class Server implements ServerInterface
 
     public function response()
     {
-        $content = $_GET['id'] ?? 'hello world';
+        $content = $_GET['id'] ?? $this->welcome;
         $http = new ResponseHandler();
         $response = $http->response($content);
         return $response;
@@ -90,5 +92,18 @@ class Server implements ServerInterface
     {
         echo $type . socket_strerror(socket_last_error()) . "\n";
         exit;
+    }
+
+    public function setWelcome()
+    {
+        $this->welcome = '<h1 style="
+text-align: center;
+color:aqua;
+margin-top: 200px;
+font-size:81px;
+font-weight: bold;
+background: grey;
+">
+欢迎使用 PhpWebServer   !!</h1>';
     }
 }
