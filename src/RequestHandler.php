@@ -6,9 +6,11 @@
  * Date: 2018/8/23
  * Time: 下午10:48
  */
+namespace Liyuequn;
+
 class RequestHandler
 {
-    public function parseHttp($http)
+    public function init($http)
     {
         // 初始化
         $_POST = $_GET = $_COOKIE = $_REQUEST = $_SESSION = $_FILES =  array();
@@ -34,6 +36,7 @@ class RequestHandler
 
         // 将header分割成数组
         list($http_header, $http_body) = explode("\r\n\r\n", $http, 2);
+
         $header_data = explode("\r\n", $http_header);
 
         list($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_SERVER['SERVER_PROTOCOL']) = explode(' ', $header_data[0]);

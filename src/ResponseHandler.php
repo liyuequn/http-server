@@ -5,6 +5,7 @@
  * Date: 2018/8/23
  * Time: 上午11:57
  */
+namespace Liyuequn;
 
 class ResponseHandler
 {

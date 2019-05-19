@@ -5,6 +5,7 @@
  * Date: 2019/5/15
  * Time: 下午6:41
  */
+namespace Liyuequn;
 
 interface ServerInterface
 {

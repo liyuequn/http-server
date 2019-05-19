@@ -5,6 +5,7 @@
  * Date: 2019/5/15
  * Time: 下午3:34
  */
+namespace Liyuequn;
 
 class Server implements ServerInterface
 {
@@ -75,9 +76,15 @@ class Server implements ServerInterface
         } while (true);
     }
 
+    /**
+     * @param $request
+     * <method> <protocl>
+     * <host>
+     */
     public function requestHandler($request)
     {
-        $this->requestHandler->parseHttp($request);
+        file_put_contents('http.log',$request,FILE_APPEND);
+        $this->requestHandler->init($request);
     }
 
     public function response()
