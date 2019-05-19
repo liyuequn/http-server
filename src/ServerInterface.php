@@ -9,7 +9,9 @@ namespace Liyuequn;
 
 interface ServerInterface
 {
-    public function setRequestHandler(RequestHandler $requestHandler);
+    public function setContextParser(ContextHandler $requestHandler);
 
-    public function setResponseHandler(ResponseHandler $responseHandler);
+    public function setResponseCallback($callback,$args);
+
+    public function setRequestCallback($callback,$args);
 }

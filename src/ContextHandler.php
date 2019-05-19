@@ -8,9 +8,9 @@
  */
 namespace Liyuequn;
 
-class RequestHandler
+class ContextHandler
 {
-    public function init($http)
+    public function parse($http)
     {
         // 初始化
         $_POST = $_GET = $_COOKIE = $_REQUEST = $_SESSION = $_FILES =  array();

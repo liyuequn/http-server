@@ -5,16 +5,23 @@
  * Date: 2019/5/15
  * Time: 下午3:34
  */
+
 namespace Liyuequn;
 
 class Server implements ServerInterface
 {
     private $ip;
     private $port;
+    /**
+     * @var ContextHandler
+     */
+    private $contextParser;
 
-    private $requestHandler;
-    private $responseHandler;
     private $welcome;
+    private $requestCallback;
+    private $requestCallbackArgs;
+    private $responseCallback;
+    private $responseCallbackArgs;
 
     public function __construct($ip, $port)
     {
@@ -23,14 +30,22 @@ class Server implements ServerInterface
         $this->setWelcome();
     }
 
-    public function setRequestHandler(RequestHandler $requestHandler)
+    public function setContextParser(ContextHandler $requestHandler)
     {
-        $this->requestHandler = $requestHandler;
+        $this->contextParser = $requestHandler;
     }
 
-    public function setResponseHandler(ResponseHandler $responseHandler)
+    public function setRequestCallback($callback,$args)
     {
-        $this->responseHandler = $responseHandler;
+        $this->requestCallback = $callback;
+        $this->requestCallbackArgs = $args;
+
+    }
+
+    public function setResponseCallback($callback,$args)
+    {
+        $this->responseCallback = $callback;
+        $this->responseCallbackArgs = $args;
     }
 
 
@@ -62,12 +77,12 @@ class Server implements ServerInterface
             }
 
             try {
-                $request = socket_read($clientFd, 1024);
-                $this->requestHandler($request);
+                $context = socket_read($clientFd, 1024);
+                $this->resolve2http($context);
 
-                $response = $this->response();
+                call_user_func_array($this->requestCallback,$this->requestCallbackArgs);
 
-                socket_write($clientFd, $response);
+                socket_write($clientFd, call_user_func_array($this->responseCallback,$this->responseCallbackArgs));
                 socket_close($clientFd);
             } catch (Exception $e) {
                 echo $e->getMessage();
@@ -81,18 +96,10 @@ class Server implements ServerInterface
      * <method> <protocl>
      * <host>
      */
-    public function requestHandler($request)
+    public function resolve2http($request)
     {
-        file_put_contents('http.log',$request,FILE_APPEND);
-        $this->requestHandler->init($request);
-    }
-
-    public function response()
-    {
-        $content = $_GET['id'] ?? $this->welcome;
-        $http = new ResponseHandler();
-        $response = $http->response($content);
-        return $response;
+        file_put_contents('http.log', $request, FILE_APPEND);
+        $this->contextParser->parse($request);
     }
 
     public function error($type)

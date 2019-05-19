@@ -12,11 +12,23 @@ require "vendor/autoload.php";
 $address = '0.0.0.0';
 $port = 8889;
 
+function response($hello)
+{
+    $responseHandler = new \Liyuequn\ResponseHandler();
+    return $responseHandler->response($hello);
+}
+
+function request($world)
+{
+    return $world;
+}
+
 $server = new \Liyuequn\Server($address, $port);
 
-$requestHandler = new \Liyuequn\RequestHandler();
-$responseHandler = new \Liyuequn\ResponseHandler();
+$contextHandler = new \Liyuequn\ContextHandler();
 
-$server->setRequestHandler($requestHandler);
-$server->setResponseHandler($responseHandler);
+$server->setRequestCallback('request',['hello']);
+$server->setResponseCallback('response',['world']);
+
+$server->setContextParser($contextHandler);
 $server->start();
