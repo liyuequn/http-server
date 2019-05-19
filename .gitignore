@@ -2,3 +2,5 @@
 .idea
 .env
 .DS_Store
+vendor
+http.log
